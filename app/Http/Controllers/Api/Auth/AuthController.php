@@ -10,16 +10,6 @@ use App\User;
 
 
 class AuthController extends Controller {
-
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct() {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
-    }
-
     /**
      * Get a JWT via given credentials.
      *
@@ -36,7 +26,7 @@ class AuthController extends Controller {
         }
 
         if (! $token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Não autorizado!'], 401);
         }
 
         return $this->createNewToken($token);
@@ -51,7 +41,7 @@ class AuthController extends Controller {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'email' => 'required|string|email|max:100|unique:users',
-            'cpf' => 'required|digits_between:1,11',
+            'cpf' => 'required|unique:users|min:11|max:11',
             'password' => 'required|string|min:6',
         ]);
 
@@ -65,7 +55,7 @@ class AuthController extends Controller {
                 ));
 
         return response()->json([
-            'message' => 'User successfully registered',
+            'message' => 'Usuário inserido com sucesso!',
             'user' => $user
         ], 201);
     }
@@ -79,7 +69,7 @@ class AuthController extends Controller {
     public function logout() {
         auth()->logout();
 
-        return response()->json(['message' => 'User successfully signed out']);
+        return response()->json(['message' => 'usuário deslogado com sucesso!']);
     }
 
     /**
